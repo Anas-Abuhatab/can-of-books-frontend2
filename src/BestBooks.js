@@ -25,7 +25,7 @@ class BestBooks extends React.Component {
   /* TODO: Make a GET request to your API to fetch books for the logged in user  */
   componentDidMount = () => {
 
-    axios.get(`${process.env.REACT_APP_BACKEND}/seedData`).then(res => {
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/seedData`).then(res => {
       this.setState({ books: res.data })
 
     })
@@ -36,7 +36,7 @@ class BestBooks extends React.Component {
 
     let config = {
       method: "DELETE",
-      baseURL: process.env.REACT_APP_BACKEND,
+      baseURL: process.env.REACT_APP_BACKEND_URL,
       url: `/books/${id}`
     }
     await axios(config).then(res => {
@@ -58,7 +58,7 @@ class BestBooks extends React.Component {
     })
      let config = {
       method: "POST",
-      baseURL: process.env.REACT_APP_BACKEND,
+      baseURL: process.env.REACT_APP_BACKEND_URL,
       url: `/books`,
       data: {
         title: this.state.title,
@@ -75,7 +75,7 @@ class BestBooks extends React.Component {
     })
   }
 
-  
+
 
 
 

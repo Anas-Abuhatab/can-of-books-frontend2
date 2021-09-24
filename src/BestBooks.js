@@ -1,10 +1,15 @@
 import React from 'react';
 import axios from 'axios';
-import { Card, ListGroup } from 'react-bootstrap';
+// import { Card, ListGroup } from 'react-bootstrap';
 import BookFormModal from './BookFormModal';
+import Render from './Render';
+// import Button from '@restart/ui/esm/Button';
+// import cors from ''
 
 
 class BestBooks extends React.Component {
+
+
   constructor(props) {
     super(props);
     this.state = {
@@ -19,81 +24,86 @@ class BestBooks extends React.Component {
 
   /* TODO: Make a GET request to your API to fetch books for the logged in user  */
   componentDidMount = () => {
-    axios.get(`${process.env.REACT_APP_BACKEND_URL}/seedData`).then(res => {
+
+    axios.get(`${process.env.REACT_APP_BACKEND}/seedData`).then(res => {
       this.setState({ books: res.data })
-      
+
     })
 
+  }
+
+  handleDelete = async(id) => {
+
+    let config = {
+      method: "DELETE",
+      baseURL: process.env.REACT_APP_BACKEND,
+      url: `/books/${id}`
+    }
+    await axios(config).then(res => {
+      this.setState({
+       books: res.data
+     })
+   })
+  }
+
+  handleSubmit = async (e) => {
+    e.preventDefault();
+
+       this.setState({
+      title: e.target[0].value,
+      email: e.target[1].value,
+      status: e.target[2].value,
+      description: e.target[3].value,
+      
+    })
+     let config = {
+      method: "POST",
+      baseURL: process.env.REACT_APP_BACKEND,
+      url: `/books`,
+      data: {
+        title: this.state.title,
+        email: this.state.email,
+        description: this.state.description,
+        status: this.state.status,
+        id: this.state._id
+      }
+    }
+    await axios(config).then(res => {
+       this.setState({
+        books: res.data
+      })
+    })
   }
 
   
-  handleSubmit=(e)=>{
-    e.preventDefault();
-    let config={
-      method:"POST",
-      baseURL:process.env.REACT_APP_BACKEND_URL,
-      url:`/books`,
-      data:{
-        title:this.state.title,
-        email:this.state.email,
-        description:this.state.email,
-        status:this.state.email,
-        id:this.state._id
-      }
-    }
-    axios(config).then(res=>{
-      // console.log(this.state.books)
-      this.setState({
-        books:res.data
-      })
-      console.log(res.data)
-    })
-  }
-  changeTitle=(e)=>{
-    this.setState({ title:e.target.value})
-  }
-  changeEmail=(e)=>{
-    this.setState({ email:e.target.value})
-  }
-  changeStatus=(e)=>{
-    this.setState({ status:e.target.value})
-  }
-  changeDescription=(e)=>{
-    this.setState({ description:e.target.value})
-  }
 
- 
+
 
   render() {
-
-    /* TODO: render user's books in a Carousel */
 
     return (
       <>
         <h2>My Essential Lifelong Learning &amp; Formation Shelf</h2>
 
         <BookFormModal handleSubmit={this.handleSubmit}
-                       changeTitle={this.changeTitle}
-                       changeEmail={this.changeEmail}
-                       changeStatus={this.changeStatus}
-                       changeDescription={this.changeDescription}
-                       />
+         
+          id={this.state.id}
+        />
 
 
         {this.state.books.map((item, key) => {
-                  return <Card style={{ width: '18rem' }}>
-            <Card.Header>Book #{key + 1} Details</Card.Header>
-            <ListGroup variant="flush">
-              <ListGroup.Item>Title: {item.title} </ListGroup.Item>
-              <ListGroup.Item>Email: {item.email}</ListGroup.Item>
-              <ListGroup.Item>Description: {item.description}</ListGroup.Item>
-              <ListGroup.Item>Status: {item.status}</ListGroup.Item>
-              <ListGroup.Item>ID: {item._id}</ListGroup.Item>
-            </ListGroup>
-            <br />
-          </Card>
+          return <Render
+            title={item.title}
+            email={item.email}
+            description={item.description}
+            status={item.status}
+            key2={key}
+            length={this.state.books.length} 
+            id={item._id}
+            Delete={this.handleDelete}/>
         })
         }
+
         {this.state.books.length ? (
           <p>Book Carousel coming soon</p>
         ) : (
